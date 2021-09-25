@@ -1,4 +1,4 @@
-# Encode | DAO: Real Estate & Renting
+# Encode Academy | DAO: Real Estate & Renting
 
 <p align="center">
   <img src="https://miro.medium.com/max/1200/1*2oKn50rnX3Ddy6QSGHQg-A.jpeg" alt="Encode Academy Banner"/>
