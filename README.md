@@ -1,42 +1,36 @@
-# Advanced Sample Hardhat Project
+# Encode | DAO: Real Estate & Renting
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+### What is this?
+This is the culmination of Encode Academy, the 8-week long Solidity course by Encode Club in collaboration with Extropy, we worked together in a group of 5:
+- Oliver Hegelund Duedam
+- Leo Bonato
+- Vasileios Politeiadis
+- Håkon Strøm Lie
+- Martin Løseth Jensen
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+The purpose of this project was to make us comfortable working together with other Smart Contract developers and follow a project from start to finish, taking care of everything:
+- Ideation
+- Planning
+- Frontend
+- Solidity/Smart Contract
+- Testing
+- Deployment
 
-Try running some of the following tasks:
+## DAO Summary & Purpose
+### Usecase
+The Government owns all apartments in a building/multiple buildings and wants to delegate management to the Tenants. Money is allocated by the Govt (optionally also by the Tenants) at regular intervals. The Tenants can propose issues and vote on them. If the vote passes, the required money is allocated to the task and made available to the Administrator to pay for required measures. Admin could be appointed by Govt or elected by Tenants.
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.js
-node scripts/deploy.js
-npx eslint '**/*.js'
-npx eslint '**/*.js' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
+- Apartments are NFTized. Transferring represents selling, staking represents renting
+- Voting weight is proportional to renters' stake/value in the DAO
 
-# Etherscan verification
+### User Stories
+Renter wants to:
+- Propose issues
+- Vote on issues
+- Contribute ETH to DAO
+- Elect admins
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
-
-In this project, copy the .env.template file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
-
-```shell
-hardhat run --network ropsten scripts/deploy.js
-```
-
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
-
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
+Admin wants to:
+- View issues
+- Block/Revert proposed issues
+- Withdraw ETH from DAO on passed issues
