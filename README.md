@@ -1,5 +1,9 @@
 # Encode | DAO: Real Estate & Renting
 
+<p align="center">
+  <img src="https://miro.medium.com/max/1200/1*2oKn50rnX3Ddy6QSGHQg-A.jpeg" alt="Encode Academy Banner"/>
+</p>
+
 ### What is this?
 This is the culmination of Encode Academy, the 8-week long Solidity course by Encode Club in collaboration with Extropy, we worked together in a group of 5:
 - Oliver Hegelund Duedam
