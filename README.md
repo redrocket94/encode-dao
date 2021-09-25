@@ -13,6 +13,8 @@ This is the culmination of Encode Academy, the 8-week long Solidity course by En
 - Vasileios Politeiadis
 - Håkon Strøm Lie
 - Martin Løseth Jensen
+  - [LinkedIn](https://www.linkedin.com/in/martinloesethjensen/)
+  - [Twitter](https://twitter.com/martin__jensen)
 
 The purpose of this project was to make us comfortable working together with other Smart Contract developers and follow a project from start to finish, taking care of everything:
 - Ideation
