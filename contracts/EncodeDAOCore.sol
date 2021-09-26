@@ -2,11 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-contract EncodeDAOCore is AccessControl {
+contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
 
-    constructor() {
+    constructor() ERC721("ApartmentNFT", "ANFT") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
@@ -30,4 +31,15 @@ contract EncodeDAOCore is AccessControl {
 
     // Get a list of passed issues
     function getPassedIssues() public view {}
+
+    // IGNORE - Required to override in impl as both ERC721 and AccessControl define this
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC721, AccessControl)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
 }
