@@ -28,7 +28,7 @@ describe("EncodeDAOCore", function () {
     await encodeDAOCore.deployed();
   });
 
-  it("should set owner role to DEFAULT_ADMIN_ROLE", async function () {
+  it("should set owner role to DEFAULT_ADMIN_ROLE on deploy", async function () {
     expect(await encodeDAOCore.hasRole(DEFAULT_ADMIN_ROLE, owner.address)).to.equal(true);
   });
 
