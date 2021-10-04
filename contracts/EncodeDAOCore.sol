@@ -6,10 +6,21 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract EncodeDAOCore is ERC721URIStorage, AccessControl {
-    bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
-    Issue[] private currentIssues;
-
     using Counters for Counters.Counter;
+
+    /// Events
+    event ProposeIssue(
+        address indexed _from,
+        string name,
+        uint256 fundingMinimum,
+        string description
+    );
+
+    /// Constants
+    bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
+
+    /// State vars
+    Issue[] private currentIssues;
     Counters.Counter private _issueIds;
 
     struct Issue {
@@ -40,6 +51,8 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
                 description: description
             })
         );
+
+        emit ProposeIssue(msg.sender, name, fundingMinimum, description);
     }
 
     /// Vote on issue by passing issueId
@@ -61,10 +74,12 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// Get a list of passed issues
     function getPassedIssues() public view {}
 
+    /// Get a list of current issues
     function getCurrentIssues() public view returns (Issue[] memory) {
         return currentIssues;
     }
 
+    /// Get the length of the currentIssues list
     function getCurrentIssuesLength() public view returns (uint256) {
         return currentIssues.length;
     }
