@@ -11,7 +11,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// Events
     event ProposeIssue(
         address indexed _from,
-        string name,
+        bytes name,
         uint16 fundingMinimum,
         string description
     );
@@ -25,7 +25,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     struct Issue {
         uint256 id;
-        string name;
+        bytes name;
         address proposer;
         uint16 fundingMinimum;
         string description;
@@ -37,7 +37,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     /// Propose issue by name and minimum funding required
     function proposeIssue(
-        string memory name,
+        bytes memory name,
         uint16 fundingMinimum,
         string memory description
     ) public {
