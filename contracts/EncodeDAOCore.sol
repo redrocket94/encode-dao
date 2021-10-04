@@ -3,10 +3,14 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
     Issue[] private currentIssues;
+
+    using Counters for Counters.Counter;
+    Counters.Counter private _issueIds;
 
     struct Issue {
         uint256 id;
@@ -26,9 +30,10 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint256 fundingMinimum,
         string memory description
     ) public {
+        _issueIds.increment();
         currentIssues.push(
             Issue({
-                id: 1,
+                id: _issueIds.current(),
                 name: name,
                 proposer: msg.sender,
                 fundingMinimum: fundingMinimum,
