@@ -12,7 +12,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     event ProposeIssue(
         address indexed _from,
         string name,
-        uint256 fundingMinimum,
+        uint16 fundingMinimum,
         string description
     );
 
@@ -27,7 +27,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint256 id;
         string name;
         address proposer;
-        uint256 fundingMinimum;
+        uint16 fundingMinimum;
         string description;
     }
 
@@ -38,7 +38,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// Propose issue by name and minimum funding required
     function proposeIssue(
         string memory name,
-        uint256 fundingMinimum,
+        uint16 fundingMinimum,
         string memory description
     ) public {
         _issueIds.increment();
