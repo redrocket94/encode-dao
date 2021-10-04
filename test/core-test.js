@@ -43,7 +43,11 @@ describe("EncodeDAOCore", function () {
     expect((await encodeDAOCore.getCurrentIssuesLength()).toNumber()).to.equal(0);
 
     // Propose a new dummy issue
-    await encodeDAOCore.connect(addr1).proposeIssue("Fix roof", 50, "We need to fix the roof - it's raining on my head!")
+    // Expect it to emit a 'ProposeIssue' event with the params specified
+    await expect(encodeDAOCore.connect(addr1)
+      .proposeIssue("Fix roof", 50, "We need to fix the roof - it's raining on my head!"))
+      .to.emit(encodeDAOCore, "ProposeIssue")
+      .withArgs(addr1.address, "Fix roof", 50, "We need to fix the roof - it's raining on my head!");
 
     // Check the length of current issues has increased by 1
     expect((await encodeDAOCore.getCurrentIssuesLength()).toNumber()).to.equal(1);
