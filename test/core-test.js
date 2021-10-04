@@ -37,6 +37,21 @@ describe("EncodeDAOCore", function () {
     await encodeDAOCore.connect(owner).grantRole(HASHED_MODERATOR_ROLE, addr1.address);
     expect(await encodeDAOCore.hasRole(HASHED_MODERATOR_ROLE, addr1.address)).to.equal(true);
   });
+
+  it("should propose an issue", async function () {
+    // Check the length of current issues is 0
+    expect((await encodeDAOCore.getCurrentIssuesLength()).toNumber()).to.equal(0);
+
+    // Propose a new dummy issue
+    // Expect it to emit a 'ProposeIssue' event with the params specified
+    await expect(encodeDAOCore.connect(addr1)
+      .proposeIssue("Fix roof", 50, "We need to fix the roof - it's raining on my head!"))
+      .to.emit(encodeDAOCore, "ProposeIssue")
+      .withArgs(addr1.address, "Fix roof", 50, "We need to fix the roof - it's raining on my head!");
+
+    // Check the length of current issues has increased by 1
+    expect((await encodeDAOCore.getCurrentIssuesLength()).toNumber()).to.equal(1);
+  });
 });
 
 // Short method to simplify keccak256 hashing
