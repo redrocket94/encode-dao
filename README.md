@@ -28,7 +28,7 @@ The purpose of this project was to make us comfortable working together with oth
 
 ## DAO Summary & Purpose
 
-### Usecase
+### Use Case
 
 The Government owns all apartments in a building/multiple buildings and wants to delegate management to the Tenants. Money is allocated by the Govt (optionally also by the Tenants) at regular intervals. The Tenants can propose issues and vote on them. If the vote passes, the required money is allocated to the task and made available to the Administrator to pay for required measures. Admin could be appointed by Govt or elected by Tenants.
 
