@@ -21,7 +21,9 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
 
     /// State vars
-    Issue[] private currentIssues;
+    Issue[] private pendingIssues;
+    Issue[] private acceptedIssues;
+    Issue[] private rejectedIssues;
     Counters.Counter private _issueIds;
 
     enum IssueStatus {
@@ -51,7 +53,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     ) public {
         _issueIds.increment();
         IssueStatus status = IssueStatus.Pending;
-        currentIssues.push(
+        pendingIssues.push(
             Issue({
                 id: _issueIds.current(),
                 name: name,
@@ -75,23 +77,42 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// Deposit funds to contract for continuous voting rights
     function deposit() public payable {}
 
+    // --- GETTERS ---
+
     /// Get a list of apartment ids owned by yourself
     function getApartmentList() public view {}
 
     /// Get the details of an apartment you own.
     function getApartmentDetails(uint256 apartmentId) public view {}
 
-    /// Get a list of passed issues
-    function getPassedIssues() public view {}
-
-    /// Get a list of current issues
-    function getCurrentIssues() public view returns (Issue[] memory) {
-        return currentIssues;
+    /// Get a list of accepted issues
+    function getAcceptedIssues() public view returns (Issue[] memory) {
+        return acceptedIssues;
     }
 
-    /// Get the length of the currentIssues list
-    function getCurrentIssuesLength() public view returns (uint256) {
-        return currentIssues.length;
+    /// Get the length of accepted issues
+    function getAcceptedIssuesLength() public view returns (uint256) {
+        return acceptedIssues.length;
+    }
+
+    /// Get a list of rejected issues
+    function getRejectedIssues() public view returns (Issue[] memory) {
+        return rejectedIssues;
+    }
+
+    /// Get the length of rejected issues
+    function getRejectedIssuesLength() public view returns (uint256) {
+        return rejectedIssues.length;
+    }
+
+    /// Get a list of pending issues
+    function getPendingIssues() public view returns (Issue[] memory) {
+        return pendingIssues;
+    }
+
+    /// Get the length of the pendingIssues list
+    function getPendingIssuesLength() public view returns (uint256) {
+        return pendingIssues.length;
     }
 
     /// @dev IGNORE - Required to override in impl as both ERC721 and AccessControl define this
