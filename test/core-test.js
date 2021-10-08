@@ -40,7 +40,7 @@ describe("EncodeDAOCore", function () {
 
   it("should propose an issue", async function () {
     // Check the length of current issues is 0
-    expect((await encodeDAOCore.getCurrentIssuesLength()).toNumber()).to.equal(0);
+    expect((await encodeDAOCore.getPendingIssuesLength()).toNumber()).to.equal(0);
 
     var strBytes = new Uint8Array("Fix roof");
 
@@ -52,7 +52,7 @@ describe("EncodeDAOCore", function () {
       .withArgs(addr1.address, strBytes, 50, "We need to fix the roof - it's raining on my head!", 0);
 
     // Check the length of current issues has increased by 1
-    expect((await encodeDAOCore.getCurrentIssuesLength()).toNumber()).to.equal(1);
+    expect((await encodeDAOCore.getPendingIssuesLength()).toNumber()).to.equal(1);
   });
 });
 
