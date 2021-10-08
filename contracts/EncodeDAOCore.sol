@@ -13,7 +13,8 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         address indexed _from,
         bytes name,
         uint16 fundingMinimum,
-        string description
+        string description,
+        IssueStatus status
     );
 
     /// Constants
@@ -23,12 +24,19 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     Issue[] private currentIssues;
     Counters.Counter private _issueIds;
 
+    enum IssueStatus {
+        Pending,
+        Rejected,
+        Accepted
+    }
+
     struct Issue {
         uint256 id;
         bytes name;
         address proposer;
         uint16 fundingMinimum;
         string description;
+        IssueStatus status;
     }
 
     constructor() ERC721("ApartmentNFT", "ANFT") {
@@ -42,17 +50,19 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         string memory description
     ) public {
         _issueIds.increment();
+        IssueStatus status = IssueStatus.Pending;
         currentIssues.push(
             Issue({
                 id: _issueIds.current(),
                 name: name,
                 proposer: msg.sender,
                 fundingMinimum: fundingMinimum,
-                description: description
+                description: description,
+                status: status
             })
         );
 
-        emit ProposeIssue(msg.sender, name, fundingMinimum, description);
+        emit ProposeIssue(msg.sender, name, fundingMinimum, description, status);
     }
 
     /// Vote on issue by passing issueId
