@@ -10,11 +10,18 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     /// Events
     event ProposeIssue(
+        uint256 id,
         address indexed _from,
         bytes name,
         uint16 fundingMinimum,
         string description,
         IssueStatus status
+    );
+
+    event IssueVotedOn(
+        address voter,
+        uint256 issueId,
+        bool decision
     );
 
     /// Constants
@@ -23,6 +30,14 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// State vars
     Issue[] private currentIssues;
     Counters.Counter private _issueIds;
+    mapping(uint256 => mapping(address => Vote)) private votesOnIssues;
+
+    /// Modifiers
+    modifier ApartmentOwnerOnly {
+        /// TODO: Add Apartment owner check
+        require(true, "Not a current apartment owner");
+        _;
+    }
 
     enum IssueStatus {
         Pending,
@@ -39,6 +54,11 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         IssueStatus status;
     }
 
+    struct Vote {
+        address voter;
+        bool vote;
+    }
+
     constructor() ERC721("ApartmentNFT", "ANFT") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
@@ -50,10 +70,11 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         string memory description
     ) public {
         _issueIds.increment();
+        uint256 currentId = _issueIds.current();
         IssueStatus status = IssueStatus.Pending;
         currentIssues.push(
             Issue({
-                id: _issueIds.current(),
+                id: currentId,
                 name: name,
                 proposer: msg.sender,
                 fundingMinimum: fundingMinimum,
@@ -62,12 +83,18 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
             })
         );
 
-        emit ProposeIssue(msg.sender, name, fundingMinimum, description, status);
+        emit ProposeIssue(currentId, msg.sender, name, fundingMinimum, description, status);
     }
 
     /// Vote on issue by passing issueId
-    /// @notice Vote on issue with issue id: `issueId`
-    function voteIssue(uint256 issueId) public {}
+    /// @notice Vote on issue with issue id: `issueId` and bool `decision`
+    function voteIssue(uint256 issueId, bool decision) public ApartmentOwnerOnly {
+        // TODO: Add check to confirm issue is in list of current Issues
+        require(true, "Issue is not current or does not exist")
+        Vote memory vote = Vote({voter: msg.sender, vote: decision});
+        votesOnIssues[issueId][msg.sender] = vote;
+        emit IssueVotedOn(msg.sender, issueId, decision);
+    }
 
     /// Withdraw (everything) from failed issue
     function withdrawFromFailedIssue() public {}
