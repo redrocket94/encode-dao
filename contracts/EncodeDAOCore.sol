@@ -77,7 +77,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// Deposit funds to contract for continuous voting rights
     function deposit() public payable {}
 
-    // --- GETTERS ---
+    /// --- GETTERS ---
 
     /// Get a list of apartment ids owned by yourself
     function getApartmentList() public view {}
