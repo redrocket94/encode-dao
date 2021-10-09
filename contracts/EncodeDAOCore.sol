@@ -90,7 +90,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// @notice Vote on issue with issue id: `issueId` and bool `decision`
     function voteIssue(uint256 issueId, bool decision) public ApartmentOwnerOnly {
         // TODO: Add check to confirm issue is in list of current Issues
-        require(true, "Issue is not current or does not exist")
+        require(true, "Issue is not current or does not exist");
         Vote memory vote = Vote({voter: msg.sender, vote: decision});
         votesOnIssues[issueId][msg.sender] = vote;
         emit IssueVotedOn(msg.sender, issueId, decision);
