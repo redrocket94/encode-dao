@@ -56,7 +56,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     struct Vote {
         address voter;
-        bool vote;
+        bool decision;
     }
 
     constructor() ERC721("ApartmentNFT", "ANFT") {
