@@ -49,7 +49,7 @@ describe("EncodeDAOCore", function () {
     await expect(encodeDAOCore.connect(addr1)
       .proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!"))
       .to.emit(encodeDAOCore, "ProposeIssue")
-      .withArgs(1, addr1.address, strBytes, 50, "We need to fix the roof - it's raining on my head!", 0);
+      .withArgs(addr1.address, strBytes, 50, "We need to fix the roof - it's raining on my head!", 0);
 
     // Check the length of current issues has increased by 1
     expect((await encodeDAOCore.getCurrentIssuesLength()).toNumber()).to.equal(1);

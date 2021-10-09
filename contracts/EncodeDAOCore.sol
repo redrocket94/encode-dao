@@ -10,7 +10,6 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     /// Events
     event ProposeIssue(
-        uint256 id,
         address indexed _from,
         bytes name,
         uint16 fundingMinimum,
@@ -83,7 +82,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
             })
         );
 
-        emit ProposeIssue(currentId, msg.sender, name, fundingMinimum, description, status);
+        emit ProposeIssue(msg.sender, name, fundingMinimum, description, status);
     }
 
     /// Vote on issue by passing issueId
