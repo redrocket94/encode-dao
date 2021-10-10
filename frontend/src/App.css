@@ -2,35 +2,8 @@
     text-align: center;
 }
 
-.App-header {
-    background-color: #282c34;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
-}
-
-main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.issue-item {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.issue-list {
-    min-width: 300px;
-    max-width: 600px;
-    padding: 1rem;
-    margin: 2rem;
-    border: 2px solid darkgrey;
+body {
+    background-color: lightgray;
 }
 
 nav {
@@ -41,40 +14,79 @@ nav {
     margin: 1rem;
 }
 
-.green {
-    background-color: lightgreen;
+a {
+    text-decoration: none;
+    color: indigo;
+    font-size: 1.2rem;
 }
 
-.red {
-    background-color: lightcoral;
+a.active {
+    font-weight: 700;
+    text-decoration: underline;
 }
 
-p {
-    margin: 0;
-    padding: 0.2rem 0.5rem;
-}
-
-.payment-list {
+main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 300px;
-    max-width: 600px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.item-list {
+    min-width: 600px;
+    max-width: 900px;
+    padding: 0.2rem 0.5rem;
     margin: 2rem;
     border: 2px solid darkgrey;
 }
 
-.payment-record {
+.list-element {
     display: grid;
-    grid-template-columns: 3fr 1fr 1fr;
-    width: 100%;
+    grid-template-columns: 70% 15% 15%;
+    align-items: center;
+    border: 2px solid darkgrey;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
 }
 
-h1 {
+.list-element-title {
+    text-align: start;
+}
+
+.green {
+    background-color: #2ecc7177;
+}
+
+.red {
+    background-color: #e74c3c77;
+}
+
+.list-header {
     font-size: 1.5rem;
+    margin: 0.3rem 0;
 }
 
-.balance-widget {
+#payments-page {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#balance-widget {
     margin: 2rem;
-    border: 2px solid grey;
+    padding: 1rem 2rem;
+    border: 2px solid darkgrey;
+    border-radius: 1rem;
+}
+
+#balance-widget span {
+    display: block;
+    font-size: 1.2rem;
+    margin: 1rem 0 0 0;
 }

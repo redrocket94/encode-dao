@@ -21,11 +21,11 @@ export default function PaymentList() {
     const paymentList = getPaymentList();
 
     return (
-        <div className="payment-list">
-            <h1>Your payments</h1>
+        <ul id="payment-list" className="item-list">
+            <h1 className="list-header">Your payments</h1>
             {paymentList.map((record, idx) => (
-                <PaymentRecord record={record} key={idx} />
+                <PaymentRecord {...record} key={idx} />
             ))}
-        </div>
+        </ul>
     );
 }

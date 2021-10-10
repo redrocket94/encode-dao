@@ -1,10 +1,9 @@
 export default function PaymentRecord(props) {
-    const { month, amount, paid } = props.record;
     return (
-        <div className={`payment-record ${paid ? "green" : "red"}`}>
-            <p>{month}</p>
-            <p>{amount} ETH</p>
-            <button disabled={paid}>Pay now!</button>
-        </div>
+        <li className={`list-element ${props.paid ? "green" : "red"}`}>
+            <span className="list-element-title">{props.month}</span>
+            <span>{props.amount} ETH</span>
+            <button disabled={props.paid}>Pay now!</button>
+        </li>
     );
 }

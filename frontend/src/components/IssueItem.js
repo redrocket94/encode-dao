@@ -1,18 +1,20 @@
 export default function IssueItem(props) {
-    const { name, status, result } = props.issue;
+    const isPending = props.status === "Pending";
+
     return (
-        <div
-            className={`issue-item ${
-                status === "closed" && (result ? "green" : "red")
+        <li
+            className={`list-element ${
+                !isPending && (props.status === "Accepted" ? "green" : "red")
             }`}
         >
-            <p>{name}</p>
-            {status === "open" && (
+            <span className="list-element-title">{props.name}</span>
+            <span>{props.fundingMinimum} ETH</span>
+            {isPending && (
                 <div className="voting-buttons">
-                    <button>yes</button>
-                    <button>no</button>
+                    <button>Yes</button>
+                    <button>No</button>
                 </div>
             )}
-        </div>
+        </li>
     );
 }

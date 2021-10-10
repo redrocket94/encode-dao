@@ -2,10 +2,10 @@ import IssueList from "./IssueList";
 
 export default function Issues() {
     return (
-        <div className="issues-page">
-            <IssueList type="open" />
-            <button>propose issue</button>
-            <IssueList type="closed" />
+        <div id="issues-page" className="app-page">
+            <IssueList status="Pending" />
+            <button>Propose issue</button>
+            <IssueList status="Resolved" />
         </div>
     );
 }

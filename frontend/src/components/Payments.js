@@ -3,7 +3,7 @@ import ContractBalance from "./ContractBalance";
 
 export default function Payments() {
     return (
-        <div className="payments-page">
+        <div id="payments-page" className="app-page">
             <PaymentList />
             <ContractBalance />
         </div>

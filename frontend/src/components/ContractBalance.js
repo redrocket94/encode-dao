@@ -6,9 +6,9 @@ export default function ContractBalance() {
     const balance = getContractBalance();
 
     return (
-        <div className="balance-widget">
-            <h1>Total balance</h1>
-            <p>{balance} ETH</p>
+        <div id="balance-widget">
+            <h1 className="list-header">Total balance</h1>
+            <span>{balance} ETH</span>
         </div>
     );
 }
