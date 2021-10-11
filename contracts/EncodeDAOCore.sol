@@ -10,12 +10,15 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     /// Events
     event ProposeIssue(
+        uint256 id,
         address indexed _from,
         bytes name,
         uint16 fundingMinimum,
         string description,
         IssueStatus status
     );
+
+    event IssueVotedOn(address voter, uint256 issueId, bool decision);
 
     /// Constants
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
@@ -25,6 +28,16 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     Issue[] private acceptedIssues;
     Issue[] private rejectedIssues;
     Counters.Counter private _issueIds;
+
+    mapping(uint256 => mapping(address => Vote)) private votesOnIssues;
+    mapping(uint256 => Apartment) private apartments;
+
+    /// Modifiers
+    modifier ApartmentOwnerOnly() {
+        /// TODO: Add Apartment owner check
+        require(true, "Not a current apartment owner");
+        _;
+    }
 
     enum IssueStatus {
         Pending,
@@ -39,6 +52,19 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint16 fundingMinimum;
         string description;
         IssueStatus status;
+        int32 decisionAggregate; // starts at 0, can be negative
+    }
+
+    struct Vote {
+        bool decision;
+        bool voted; // User has voted
+    }
+
+    struct Apartment {
+        uint256 id;
+        uint256 floor;
+        uint256 squareMeters;
+        bool heating;
     }
 
     constructor() ERC721("ApartmentNFT", "ANFT") {
@@ -51,25 +77,59 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint16 fundingMinimum,
         string memory description
     ) public {
+        uint256 currentId = _issueIds.current();
         _issueIds.increment();
         IssueStatus status = IssueStatus.Pending;
         pendingIssues.push(
             Issue({
-                id: _issueIds.current(),
+                id: currentId,
                 name: name,
                 proposer: msg.sender,
                 fundingMinimum: fundingMinimum,
                 description: description,
-                status: status
+                status: status,
+                decisionAggregate: 0
             })
         );
 
-        emit ProposeIssue(msg.sender, name, fundingMinimum, description, status);
+        emit ProposeIssue(
+            currentId,
+            msg.sender,
+            name,
+            fundingMinimum,
+            description,
+            status
+        );
     }
 
     /// Vote on issue by passing issueId
-    /// @notice Vote on issue with issue id: `issueId`
-    function voteIssue(uint256 issueId) public {}
+    /// @notice Vote on issue with issue id: `issueId` and bool `decision`
+    function voteIssue(uint256 issueId, bool decision)
+        public
+        ApartmentOwnerOnly
+    {
+        require(issueId <= _issueIds.current(), "IssueID is not valid");
+        require(
+            pendingIssues[issueId].status == IssueStatus.Pending,
+            "Issue is not pending"
+        );
+        require(
+            !votesOnIssues[issueId][msg.sender].voted,
+            "User has already voted"
+        );
+
+        Vote memory vote = Vote({decision: decision, voted: true});
+        votesOnIssues[issueId][msg.sender] = vote;
+
+        // Change decision aggregate on issue, increment if true or deduct if false.
+        if (decision) {
+            pendingIssues[issueId].decisionAggregate++;
+        } else {
+            pendingIssues[issueId].decisionAggregate--;
+        }
+
+        emit IssueVotedOn(msg.sender, issueId, decision);
+    }
 
     /// Withdraw (everything) from failed issue
     function withdrawFromFailedIssue() public {}
@@ -83,7 +143,13 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     function getApartmentList() public view {}
 
     /// Get the details of an apartment you own.
-    function getApartmentDetails(uint256 apartmentId) public view {}
+    function getApartmentDetails(uint256 apartmentId)
+        public
+        view
+        returns (Apartment memory apartment)
+    {
+        return (apartments[apartmentId]);
+    }
 
     /// Get a list of accepted issues
     function getAcceptedIssues() public view returns (Issue[] memory) {
