@@ -18,11 +18,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         IssueStatus status
     );
 
-    event IssueVotedOn(
-        address voter,
-        uint256 issueId,
-        bool decision
-    );
+    event IssueVotedOn(address voter, uint256 issueId, bool decision);
 
     /// Constants
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
@@ -30,12 +26,12 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// State vars
     Issue[] private issues;
     Counters.Counter private _issueIds;
-    
+
     mapping(uint256 => mapping(address => Vote)) private votesOnIssues;
-    mapping(uint256 => Apartment) apartments;
+    mapping(uint256 => Apartment) private apartments;
 
     /// Modifiers
-    modifier ApartmentOwnerOnly {
+    modifier ApartmentOwnerOnly() {
         /// TODO: Add Apartment owner check
         require(true, "Not a current apartment owner");
         _;
@@ -63,9 +59,9 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     }
 
     struct Apartment {
-        uint id;
-        uint floor;
-        uint squareMeters;
+        uint256 id;
+        uint256 floor;
+        uint256 squareMeters;
         bool heating;
     }
 
@@ -94,26 +90,42 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
             })
         );
 
-        emit ProposeIssue(currentId, msg.sender, name, fundingMinimum, description, status);
+        emit ProposeIssue(
+            currentId,
+            msg.sender,
+            name,
+            fundingMinimum,
+            description,
+            status
+        );
     }
 
     /// Vote on issue by passing issueId
     /// @notice Vote on issue with issue id: `issueId` and bool `decision`
-    function voteIssue(uint256 issueId, bool decision) public ApartmentOwnerOnly {
-        require(issueId <= _issueIds.current(), "IssueID is not valid"); 
-        require(issues[issueId].status == IssueStatus.Pending, "Issue is not pending");
-        require(!votesOnIssues[issueId][msg.sender].voted, "User has already voted");
+    function voteIssue(uint256 issueId, bool decision)
+        public
+        ApartmentOwnerOnly
+    {
+        require(issueId <= _issueIds.current(), "IssueID is not valid");
+        require(
+            issues[issueId].status == IssueStatus.Pending,
+            "Issue is not pending"
+        );
+        require(
+            !votesOnIssues[issueId][msg.sender].voted,
+            "User has already voted"
+        );
 
         Vote memory vote = Vote({decision: decision, voted: true});
         votesOnIssues[issueId][msg.sender] = vote;
-        
+
         // Change decision aggregate on issue, increment if true or deduct if false.
-        if(decision) {
+        if (decision) {
             issues[issueId].decisionAggregate++;
         } else {
             issues[issueId].decisionAggregate--;
         }
-        
+
         emit IssueVotedOn(msg.sender, issueId, decision);
     }
 
@@ -129,9 +141,14 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     function getApartmentList() public view {}
 
     /// Get the details of an apartment you own.
-    function getApartmentDetails(uint256 apartmentId) public view returns (Apartment memory apartment) {
+    function getApartmentDetails(uint256 apartmentId)
+        public
+        view
+        returns (Apartment memory apartment)
+    {
         return apartments[apartmentId];
     }
+
     /// Get a list of issues
     function getIssues() public view returns (Issue[] memory) {
         return issues;

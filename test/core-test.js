@@ -21,7 +21,7 @@ describe("EncodeDAOCore", function () {
   beforeEach(async function () {
     [owner, addr1, addr2] = await ethers.getSigners();
 
-    // Deploy MockNFT contract
+    // Deploy EncodeDAOCore contract
     EncodeDAOCore = await ethers.getContractFactory("EncodeDAOCore");
     encodeDAOCore = await EncodeDAOCore.deploy();
 
@@ -55,32 +55,32 @@ describe("EncodeDAOCore", function () {
     expect((await encodeDAOCore.getIssuesLength()).toNumber()).to.equal(1);
   });
 
-    it("should vote on an issue", async function () {
-       // Add Issue
-        var strBytes = new Uint8Array("Fix roof");
-        await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
-        // Vote on Issue nr 0. Should change to read issueId from event
-        var issueId = 0;
-        await expect(encodeDAOCore.connect(addr1)
-            .voteIssue(issueId, true))
-            .to.emit(encodeDAOCore, "IssueVotedOn")
-            .withArgs(addr1.address, issueId, true);
-    })
+  it("should vote on an issue", async function () {
+    // Add Issue
+    var strBytes = new Uint8Array("Fix roof");
+    await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
+    // Vote on Issue nr 0. Should change to read issueId from event
+    var issueId = 0;
+    await expect(encodeDAOCore.connect(addr1)
+      .voteIssue(issueId, true))
+      .to.emit(encodeDAOCore, "IssueVotedOn")
+      .withArgs(addr1.address, issueId, true);
+  })
 
-    it("Should not vote twice on the same issue", async function () {
-        var strBytes = new Uint8Array("fix roof");
-        await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
-        // Vote on Issue nr 0
-        var issueId = 0;
-        await encodeDAOCore.connect(addr1)
-            .voteIssue(issueId, true)
+  it("Should not vote twice on the same issue", async function () {
+    var strBytes = new Uint8Array("fix roof");
+    await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
+    // Vote on Issue nr 0
+    var issueId = 0;
+    await encodeDAOCore.connect(addr1)
+      .voteIssue(issueId, true)
 
-        // Vote again
-        await expect(encodeDAOCore.connect(addr1)
-            .voteIssue(issueId, false))
-            .to.be.revertedWith('User has already voted');
+    // Vote again
+    await expect(encodeDAOCore.connect(addr1)
+      .voteIssue(issueId, false))
+      .to.be.revertedWith('User has already voted');
 
-    })
+  })
 
 });
 
