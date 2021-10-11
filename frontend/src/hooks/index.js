@@ -26,3 +26,8 @@ export function useContractMethod(methodName) {
     const { state, send } = useContractFunction(contract, methodName, {});
     return { state, send };
 }
+
+export function useVote() {
+    const { state, send } = useContractFunction(contract, "voteIssue", {});
+    return { state, send };
+}
