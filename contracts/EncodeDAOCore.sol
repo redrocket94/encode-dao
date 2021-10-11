@@ -10,6 +10,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     /// Events
     event ProposeIssue(
+        uint256 id,
         address indexed _from,
         bytes name,
         uint16 fundingMinimum,
@@ -51,11 +52,12 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint16 fundingMinimum;
         string description;
         IssueStatus status;
+        uint32 decisionAggregate;
     }
 
     struct Vote {
-        address voter;
         bool decision;
+        bool voted; // User has voted
     }
 
     constructor() ERC721("ApartmentNFT", "ANFT") {
@@ -78,11 +80,12 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
                 proposer: msg.sender,
                 fundingMinimum: fundingMinimum,
                 description: description,
-                status: status
+                status: status,
+                decisionAggregate: 0
             })
         );
 
-        emit ProposeIssue(msg.sender, name, fundingMinimum, description, status);
+        emit ProposeIssue(currentId, msg.sender, name, fundingMinimum, description, status);
     }
 
     /// Vote on issue by passing issueId
@@ -90,7 +93,8 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     function voteIssue(uint256 issueId, bool decision) public ApartmentOwnerOnly {
         // TODO: Add check to confirm issue is in list of current Issues
         require(true, "Issue is not current or does not exist");
-        Vote memory vote = Vote({voter: msg.sender, decision: decision});
+        require(!votesOnIssues[issueId][msg.sender].voted, "User has already voted");
+        Vote memory vote = Vote({decision: decision, voted: true});
         votesOnIssues[issueId][msg.sender] = vote;
         emit IssueVotedOn(msg.sender, issueId, decision);
     }
