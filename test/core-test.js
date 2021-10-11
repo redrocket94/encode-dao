@@ -49,11 +49,39 @@ describe("EncodeDAOCore", function () {
     await expect(encodeDAOCore.connect(addr1)
       .proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!"))
       .to.emit(encodeDAOCore, "ProposeIssue")
-      .withArgs(addr1.address, strBytes, 50, "We need to fix the roof - it's raining on my head!", 0);
+      .withArgs(0, addr1.address, strBytes, 50, "We need to fix the roof - it's raining on my head!", 0);
 
     // Check the length of current issues has increased by 1
     expect((await encodeDAOCore.getPendingIssuesLength()).toNumber()).to.equal(1);
   });
+
+    it("should vote on an issue", async function () {
+       // Add Issue
+        var strBytes = new Uint8Array("Fix roof");
+        await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
+        // Vote on Issue nr 0. Should change to read issueId from event
+        var issueId = 0;
+        await expect(encodeDAOCore.connect(addr1)
+            .voteIssue(issueId, true))
+            .to.emit(encodeDAOCore, "IssueVotedOn")
+            .withArgs(addr1.address, issueId, true);
+    })
+
+    it("Should not vote twice on the same issue", async function () {
+        var strBytes = new Uint8Array("fix roof");
+        await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
+        // Vote on Issue nr 0
+        var issueId = 0;
+        await encodeDAOCore.connect(addr1)
+            .voteIssue(issueId, true)
+
+        // Vote again
+        await expect(encodeDAOCore.connect(addr1)
+            .voteIssue(issueId, false))
+            .to.be.revertedWith('User has already voted');
+
+    })
+
 });
 
 // Short method to simplify keccak256 hashing

@@ -10,11 +10,18 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     /// Events
     event ProposeIssue(
+        uint256 id,
         address indexed _from,
         bytes name,
         uint16 fundingMinimum,
         string description,
         IssueStatus status
+    );
+
+    event IssueVotedOn(
+        address voter,
+        uint256 issueId,
+        bool decision
     );
 
     /// Constants
@@ -25,7 +32,16 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     Issue[] private acceptedIssues;
     Issue[] private rejectedIssues;
     Counters.Counter private _issueIds;
+    
+    mapping(uint256 => mapping(address => Vote)) private votesOnIssues;
     mapping(uint256 => Apartment) apartments;
+
+    /// Modifiers
+    modifier ApartmentOwnerOnly {
+        /// TODO: Add Apartment owner check
+        require(true, "Not a current apartment owner");
+        _;
+    }
 
     enum IssueStatus {
         Pending,
@@ -40,6 +56,12 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint16 fundingMinimum;
         string description;
         IssueStatus status;
+        int32 decisionAggregate; // starts at 0, can be negative
+    }
+
+    struct Vote {
+        bool decision;
+        bool voted; // User has voted
     }
 
     struct Apartment {
@@ -59,25 +81,43 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint16 fundingMinimum,
         string memory description
     ) public {
+        uint256 currentId = _issueIds.current();
         _issueIds.increment();
         IssueStatus status = IssueStatus.Pending;
         pendingIssues.push(
             Issue({
-                id: _issueIds.current(),
+                id: currentId,
                 name: name,
                 proposer: msg.sender,
                 fundingMinimum: fundingMinimum,
                 description: description,
-                status: status
+                status: status,
+                decisionAggregate: 0
             })
         );
 
-        emit ProposeIssue(msg.sender, name, fundingMinimum, description, status);
+        emit ProposeIssue(currentId, msg.sender, name, fundingMinimum, description, status);
     }
 
     /// Vote on issue by passing issueId
-    /// @notice Vote on issue with issue id: `issueId`
-    function voteIssue(uint256 issueId) public {}
+    /// @notice Vote on issue with issue id: `issueId` and bool `decision`
+    function voteIssue(uint256 issueId, bool decision) public ApartmentOwnerOnly {
+        require(issueId <= _issueIds.current(), "IssueID is not valid"); 
+        require(currentIssues[issueId].status == IssueStatus.Pending, "Issue is not pending");
+        require(!votesOnIssues[issueId][msg.sender].voted, "User has already voted");
+
+        Vote memory vote = Vote({decision: decision, voted: true});
+        votesOnIssues[issueId][msg.sender] = vote;
+        
+        // Change decision aggregate on issue, increment if true or deduct if false.
+        if(decision) {
+            currentIssues[issueId].decisionAggregate++;
+        } else {
+            currentIssues[issueId].decisionAggregate--;
+        }
+        
+        emit IssueVotedOn(msg.sender, issueId, decision);
+    }
 
     /// Withdraw (everything) from failed issue
     function withdrawFromFailedIssue() public {}
