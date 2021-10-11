@@ -1,18 +1,22 @@
 import { useState } from "react";
-// import { useContractMethod } from "../hooks";
+import { useContractMethod } from "../hooks";
+import { ethers } from "ethers";
 
 export default function ProposeIssue({ close }) {
     const [name, setName] = useState("");
     const [funding, setFunding] = useState(0);
     const [description, setDescription] = useState("");
 
-    // const { state, send: sendProposeIssue } = useContractMethod("proposeIssue");
-    // window.sendProposeIssue = sendProposeIssue;
+    const { state, send: sendProposeIssue } = useContractMethod("proposeIssue");
 
     function handleClick() {
-        // if (name) {
-        //     sendProposeIssue(name, funding, description);
-        // }
+        if (name) {
+            sendProposeIssue(
+                ethers.utils.formatBytes32String(name),
+                funding,
+                description
+            );
+        }
     }
 
     return (

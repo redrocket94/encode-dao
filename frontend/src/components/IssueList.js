@@ -31,8 +31,9 @@ export default function IssueList(props) {
             },
         ];
     }
-    const resolvedIssues = getResolvedIssues();
+    const resolvedIssues = [];
     const pendingIssues = usePendingIssues();
+    window.pendingIssues = pendingIssues;
     const issues = props.status === "Pending" ? pendingIssues : resolvedIssues;
 
     return (
@@ -43,7 +44,15 @@ export default function IssueList(props) {
                     : "Resolved issues"}
             </h1>
             {issues &&
-                issues.map((issue, idx) => <IssueItem {...issue} key={idx} />)}
+                issues.map(([issue], idx) => (
+                    <IssueItem
+                        name={issue.name}
+                        status={issue.status}
+                        fundingMinimum={issue.fundingMinimum}
+                        description={issue.description}
+                        key={idx}
+                    />
+                ))}
         </ul>
     );
 }
