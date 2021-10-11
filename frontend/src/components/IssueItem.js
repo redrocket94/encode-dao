@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 
 export default function IssueItem(props) {
     const isPending = props.status === 0;
+    console.log(props);
 
     return (
         <li

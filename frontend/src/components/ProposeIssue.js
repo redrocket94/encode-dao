@@ -16,6 +16,7 @@ export default function ProposeIssue({ close }) {
                 funding,
                 description
             );
+            window.state = state;
         }
     }
 
