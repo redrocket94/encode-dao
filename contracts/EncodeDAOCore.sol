@@ -28,9 +28,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
 
     /// State vars
-    Issue[] private pendingIssues;
-    Issue[] private acceptedIssues;
-    Issue[] private rejectedIssues;
+    Issue[] private issues;
     Counters.Counter private _issueIds;
     
     mapping(uint256 => mapping(address => Vote)) private votesOnIssues;
@@ -84,7 +82,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint256 currentId = _issueIds.current();
         _issueIds.increment();
         IssueStatus status = IssueStatus.Pending;
-        pendingIssues.push(
+        issues.push(
             Issue({
                 id: currentId,
                 name: name,
@@ -103,7 +101,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// @notice Vote on issue with issue id: `issueId` and bool `decision`
     function voteIssue(uint256 issueId, bool decision) public ApartmentOwnerOnly {
         require(issueId <= _issueIds.current(), "IssueID is not valid"); 
-        require(currentIssues[issueId].status == IssueStatus.Pending, "Issue is not pending");
+        require(issues[issueId].status == IssueStatus.Pending, "Issue is not pending");
         require(!votesOnIssues[issueId][msg.sender].voted, "User has already voted");
 
         Vote memory vote = Vote({decision: decision, voted: true});
@@ -111,9 +109,9 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         
         // Change decision aggregate on issue, increment if true or deduct if false.
         if(decision) {
-            currentIssues[issueId].decisionAggregate++;
+            issues[issueId].decisionAggregate++;
         } else {
-            currentIssues[issueId].decisionAggregate--;
+            issues[issueId].decisionAggregate--;
         }
         
         emit IssueVotedOn(msg.sender, issueId, decision);
@@ -131,37 +129,17 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     function getApartmentList() public view {}
 
     /// Get the details of an apartment you own.
-    function getApartmentDetails(uint256 apartmentId) public view returns (Apartment apartment) {
-        return (apartments[apartmentId]);
+    function getApartmentDetails(uint256 apartmentId) public view returns (Apartment memory apartment) {
+        return apartments[apartmentId];
     }
-    /// Get a list of accepted issues
-    function getAcceptedIssues() public view returns (Issue[] memory) {
-        return acceptedIssues;
-    }
-
-    /// Get the length of accepted issues
-    function getAcceptedIssuesLength() public view returns (uint256) {
-        return acceptedIssues.length;
+    /// Get a list of issues
+    function getIssues() public view returns (Issue[] memory) {
+        return issues;
     }
 
-    /// Get a list of rejected issues
-    function getRejectedIssues() public view returns (Issue[] memory) {
-        return rejectedIssues;
-    }
-
-    /// Get the length of rejected issues
-    function getRejectedIssuesLength() public view returns (uint256) {
-        return rejectedIssues.length;
-    }
-
-    /// Get a list of pending issues
-    function getPendingIssues() public view returns (Issue[] memory) {
-        return pendingIssues;
-    }
-
-    /// Get the length of the pendingIssues list
-    function getPendingIssuesLength() public view returns (uint256) {
-        return pendingIssues.length;
+    /// Get the length of issues
+    function getIssuesLength() public view returns (uint256) {
+        return issues.length;
     }
 
     /// @dev IGNORE - Required to override in impl as both ERC721 and AccessControl define this
