@@ -52,7 +52,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint16 fundingMinimum;
         string description;
         IssueStatus status;
-        uint32 decisionAggregate;
+        int32 decisionAggregate; // starts at 0, can be negative
     }
 
     struct Vote {
@@ -70,7 +70,6 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint16 fundingMinimum,
         string memory description
     ) public {
-        _issueIds.increment();
         uint256 currentId = _issueIds.current();
         IssueStatus status = IssueStatus.Pending;
         currentIssues.push(
@@ -84,6 +83,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
                 decisionAggregate: 0
             })
         );
+        _issueIds.increment();
 
         emit ProposeIssue(currentId, msg.sender, name, fundingMinimum, description, status);
     }
@@ -92,10 +92,18 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// @notice Vote on issue with issue id: `issueId` and bool `decision`
     function voteIssue(uint256 issueId, bool decision) public ApartmentOwnerOnly {
         // TODO: Add check to confirm issue is in list of current Issues
-        require(true, "Issue is not current or does not exist");
+        require(issueId <= _issueIds.current()); 
+        require(currentIssues[issueId].status == IssueStatus.Pending, "Issue is not current or does not exist");
         require(!votesOnIssues[issueId][msg.sender].voted, "User has already voted");
         Vote memory vote = Vote({decision: decision, voted: true});
         votesOnIssues[issueId][msg.sender] = vote;
+        
+        if(decision) {
+            currentIssues[issueId].decisionAggregate++;
+        } else {
+            currentIssues[issueId].decisionAggregate--;
+        }
+        
         emit IssueVotedOn(msg.sender, issueId, decision);
     }
 
