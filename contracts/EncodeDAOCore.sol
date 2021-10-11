@@ -25,6 +25,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     Issue[] private acceptedIssues;
     Issue[] private rejectedIssues;
     Counters.Counter private _issueIds;
+    mapping(uint256 => Apartment) apartments;
 
     enum IssueStatus {
         Pending,
@@ -39,6 +40,13 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         uint16 fundingMinimum;
         string description;
         IssueStatus status;
+    }
+
+    struct Apartment {
+        uint id;
+        uint floor;
+        uint squareMeters;
+        bool heating;
     }
 
     constructor() ERC721("ApartmentNFT", "ANFT") {
@@ -83,8 +91,9 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     function getApartmentList() public view {}
 
     /// Get the details of an apartment you own.
-    function getApartmentDetails(uint256 apartmentId) public view {}
-
+    function getApartmentDetails(uint256 apartmentId) public view returns (Apartment apartment) {
+        return (apartments[apartmentId]);
+    }
     /// Get a list of accepted issues
     function getAcceptedIssues() public view returns (Issue[] memory) {
         return acceptedIssues;
