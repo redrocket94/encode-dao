@@ -91,13 +91,14 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// Vote on issue by passing issueId
     /// @notice Vote on issue with issue id: `issueId` and bool `decision`
     function voteIssue(uint256 issueId, bool decision) public ApartmentOwnerOnly {
-        // TODO: Add check to confirm issue is in list of current Issues
-        require(issueId <= _issueIds.current()); 
-        require(currentIssues[issueId].status == IssueStatus.Pending, "Issue is not current or does not exist");
+        require(issueId <= _issueIds.current(), "IssueID is not valid"); 
+        require(currentIssues[issueId].status == IssueStatus.Pending, "Issue is not pending");
         require(!votesOnIssues[issueId][msg.sender].voted, "User has already voted");
+
         Vote memory vote = Vote({decision: decision, voted: true});
         votesOnIssues[issueId][msg.sender] = vote;
         
+        // Change decision aggregate on issue, increment if true or deduct if false.
         if(decision) {
             currentIssues[issueId].decisionAggregate++;
         } else {
