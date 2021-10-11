@@ -71,6 +71,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         string memory description
     ) public {
         uint256 currentId = _issueIds.current();
+        _issueIds.increment();
         IssueStatus status = IssueStatus.Pending;
         currentIssues.push(
             Issue({
@@ -83,7 +84,6 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
                 decisionAggregate: 0
             })
         );
-        _issueIds.increment();
 
         emit ProposeIssue(currentId, msg.sender, name, fundingMinimum, description, status);
     }
