@@ -24,10 +24,10 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
 
     /// State vars
-    Issue[] private issues;
+    Issue[] private _issues;
     Counters.Counter private _issueIds;
 
-    mapping(uint256 => mapping(address => Vote)) private votesOnIssues;
+    mapping(uint256 => mapping(address => VoteStatus)) private votesOnIssues;
     mapping(uint256 => Apartment) private apartments;
 
     /// Modifiers
@@ -38,9 +38,14 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     }
 
     enum IssueStatus {
-        Pending,
-        Rejected,
-        Accepted
+        PENDING,
+        REJECTED,
+        ACCEPTED
+    }
+    enum VoteStatus {
+        NO_VOTE,
+        ACCEPT,
+        REJECT
     }
 
     struct Issue {
@@ -51,11 +56,6 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         string description;
         IssueStatus status;
         int32 decisionAggregate; // starts at 0, can be negative
-    }
-
-    struct Vote {
-        bool decision;
-        bool voted; // User has voted
     }
 
     struct Apartment {
@@ -77,8 +77,8 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     ) public {
         uint256 currentId = _issueIds.current();
         _issueIds.increment();
-        IssueStatus status = IssueStatus.Pending;
-        issues.push(
+        IssueStatus status = IssueStatus.PENDING;
+        _issues.push(
             Issue({
                 id: currentId,
                 name: name,
@@ -108,22 +108,25 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     {
         require(issueId <= _issueIds.current(), "IssueID is not valid");
         require(
-            issues[issueId].status == IssueStatus.Pending,
+            _issues[issueId].status == IssueStatus.PENDING,
             "Issue is not pending"
         );
         require(
-            !votesOnIssues[issueId][msg.sender].voted,
+            votesOnIssues[issueId][msg.sender] == VoteStatus.NO_VOTE,
             "User has already voted"
         );
 
-        Vote memory vote = Vote({decision: decision, voted: true});
-        votesOnIssues[issueId][msg.sender] = vote;
+        if (decision) {
+            votesOnIssues[issueId][msg.sender] = VoteStatus.ACCEPT;
+        } else {
+            votesOnIssues[issueId][msg.sender] = VoteStatus.REJECT;
+        }
 
         // Change decision aggregate on issue, increment if true or deduct if false.
         if (decision) {
-            issues[issueId].decisionAggregate++;
+            _issues[issueId].decisionAggregate++;
         } else {
-            issues[issueId].decisionAggregate--;
+            _issues[issueId].decisionAggregate--;
         }
 
         emit IssueVotedOn(msg.sender, issueId, decision);
@@ -149,14 +152,14 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         return apartments[apartmentId];
     }
 
-    /// Get a list of issues
+    /// Get a list of _issues
     function getIssues() public view returns (Issue[] memory) {
-        return issues;
+        return _issues;
     }
 
-    /// Get the length of issues
+    /// Get the length of _issues
     function getIssuesLength() public view returns (uint256) {
-        return issues.length;
+        return _issues.length;
     }
 
     /// @dev IGNORE - Required to override in impl as both ERC721 and AccessControl define this
