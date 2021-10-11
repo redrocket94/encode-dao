@@ -1,4 +1,5 @@
 import IssueItem from "./IssueItem";
+import { usePendingIssues } from "../hooks";
 
 export default function IssueList(props) {
     function getPendingIssues() {
@@ -30,8 +31,9 @@ export default function IssueList(props) {
             },
         ];
     }
-    const issues =
-        props.status === "Pending" ? getPendingIssues() : getResolvedIssues();
+    const resolvedIssues = getResolvedIssues();
+    const pendingIssues = usePendingIssues();
+    const issues = props.status === "Pending" ? pendingIssues : resolvedIssues;
 
     return (
         <ul id="issue-list" className="item-list">
@@ -40,9 +42,8 @@ export default function IssueList(props) {
                     ? "Pending issues"
                     : "Resolved issues"}
             </h1>
-            {issues.map((issue, idx) => (
-                <IssueItem {...issue} key={idx} />
-            ))}
+            {issues &&
+                issues.map((issue, idx) => <IssueItem {...issue} key={idx} />)}
         </ul>
     );
 }

@@ -8,12 +8,15 @@ import {
 
 import Issues from "./components/Issues";
 import Payments from "./components/Payments";
+import ConnectButton from "./components/ConnectButton";
 
 function App() {
     return (
         <div className="App">
             <Router>
-                <header></header>
+                <header>
+                    <ConnectButton />
+                </header>
                 <nav>
                     <NavLink exact to="/">
                         Issues
