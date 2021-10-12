@@ -41,8 +41,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     /// Modifiers
     modifier ApartmentOwnerOnly() {
-        /// TODO: Add Apartment owner check
-        require(true, "Not a current apartment owner");
+        require(balanceOf(msg.sender) > 0, "Not a current apartment owner");
         _;
     }
 
