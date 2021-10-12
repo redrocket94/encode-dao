@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { useVote } from "../hooks";
 import { useState } from "react";
+import CompleteIssue from "./CompleteIssue";
 
 export default function IssueItem(props) {
     const { state: voteState, send: sendVote } = useVote();
@@ -22,9 +23,14 @@ export default function IssueItem(props) {
             </span>
             <span>{props.fundingMinimum} $</span>
             {props.status === 0 && (
+                <div>
                 <div className="voting-buttons">
                     <button onClick={() => onVote(true)}>Yes</button>
                     <button onClick={() => onVote(false)}>No</button>
+                </div>
+                <div>
+                    <CompleteIssue issueId={props.id} />
+                </div>
                 </div>
             )}
             {isModal && (
