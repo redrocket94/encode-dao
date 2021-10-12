@@ -75,7 +75,7 @@ describe("EncodeDAOCore", function () {
     // Mint dummy apartment as only NFT holders can vote
     await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "");
 
-    var strBytes = new Uint8Array("fix roof");
+    var strBytes = new Uint8Array("Fix roof");
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
     // Vote on Issue nr 0
     var issueId = 0;
@@ -91,9 +91,19 @@ describe("EncodeDAOCore", function () {
 
   it("should mint apartment on admin call", async function () {
     await expect(encodeDAOCore.connect(owner)
-      .mintApartment(1, 20, true, "testURI"))
+      .mintApartment(addr1.address, 1, 20, true, "testURI"))
       .to.emit(encodeDAOCore, "MintApartment")
-      .withArgs(owner.addresss, 1, 1, 20, true);
+      .withArgs(owner.addresss, addr1.address, 1, 1, 20, true);
+
+    expect(await encodeDAOCore.balanceOf(addr1.address)).to.equal(1);
+  });
+
+  it("should revert mint apartment on non-admin call", async function () {
+    await expect(encodeDAOCore.connect(addr1)
+      .mintApartment(addr2.address, 1, 20, true, "testURI"))
+      .to.be.revertedWith('Caller is not admin');
+
+    expect(await encodeDAOCore.balanceOf(addr2.address)).to.equal(0);
   });
 });
 
@@ -101,3 +111,4 @@ describe("EncodeDAOCore", function () {
 function keccak256(strToHash) {
   return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(strToHash));
 }
+
