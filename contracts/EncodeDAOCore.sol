@@ -18,6 +18,15 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         IssueStatus status
     );
 
+    event MintApartment(
+        address minter,
+        address receiver,
+        uint256 id,
+        uint256 floor,
+        uint256 squareMeters,
+        bool heating
+    );
+
     event IssueVotedOn(address voter, uint256 issueId, bool decision);
 
     /// Constants
@@ -26,14 +35,14 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// State vars
     Issue[] private _issues;
     Counters.Counter private _issueIds;
+    Counters.Counter private _apartmentIds;
 
-    mapping(uint256 => mapping(address => VoteStatus)) private votesOnIssues;
-    mapping(uint256 => Apartment) private apartments;
+    mapping(uint256 => mapping(address => VoteStatus)) private _votesOnIssues;
+    mapping(uint256 => Apartment) private _apartmentIdToApartment;
 
     /// Modifiers
     modifier ApartmentOwnerOnly() {
-        /// TODO: Add Apartment owner check
-        require(true, "Not a current apartment owner");
+        require(balanceOf(msg.sender) > 0, "Not a current apartment owner");
         _;
     }
 
@@ -59,7 +68,6 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     }
 
     struct Apartment {
-        uint256 id;
         uint256 floor;
         uint256 squareMeters;
         bool heating;
@@ -67,6 +75,37 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     constructor() ERC721("ApartmentNFT", "ANFT") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function mintApartment(
+        address receiver,
+        uint256 floor,
+        uint256 squareMeters,
+        bool heating,
+        string memory uri
+    ) external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not admin");
+
+        _apartmentIds.increment();
+        uint256 currentId = _apartmentIds.current();
+
+        _apartmentIdToApartment[currentId] = Apartment({
+            floor: floor,
+            squareMeters: squareMeters,
+            heating: heating
+        });
+
+        _mint(receiver, currentId);
+        _setTokenURI(currentId, uri);
+
+        emit MintApartment(
+            msg.sender,
+            receiver,
+            currentId,
+            floor,
+            squareMeters,
+            heating
+        );
     }
 
     /// Propose issue by name and minimum funding required
@@ -112,14 +151,14 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
             "Issue is not pending"
         );
         require(
-            votesOnIssues[issueId][msg.sender] == VoteStatus.NO_VOTE,
+            _votesOnIssues[issueId][msg.sender] == VoteStatus.NO_VOTE,
             "User has already voted"
         );
 
         if (decision) {
-            votesOnIssues[issueId][msg.sender] = VoteStatus.ACCEPT;
+            _votesOnIssues[issueId][msg.sender] = VoteStatus.ACCEPT;
         } else {
-            votesOnIssues[issueId][msg.sender] = VoteStatus.REJECT;
+            _votesOnIssues[issueId][msg.sender] = VoteStatus.REJECT;
         }
 
         // Change decision aggregate on issue, increment if true or deduct if false.
@@ -149,7 +188,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         view
         returns (Apartment memory apartment)
     {
-        return apartments[apartmentId];
+        return _apartmentIdToApartment[apartmentId];
     }
 
     /// Get a list of _issues

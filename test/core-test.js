@@ -56,9 +56,13 @@ describe("EncodeDAOCore", function () {
   });
 
   it("should vote on an issue", async function () {
+    // Mint dummy apartment as only NFT holders can vote
+    await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "");
+
     // Add Issue
     var strBytes = new Uint8Array("Fix roof");
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
+
     // Vote on Issue nr 0. Should change to read issueId from event
     var issueId = 0;
     await expect(encodeDAOCore.connect(addr1)
@@ -67,8 +71,11 @@ describe("EncodeDAOCore", function () {
       .withArgs(addr1.address, issueId, true);
   })
 
-  it("Should not vote twice on the same issue", async function () {
-    var strBytes = new Uint8Array("fix roof");
+  it("should not vote twice on the same issue", async function () {
+    // Mint dummy apartment as only NFT holders can vote
+    await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "");
+
+    var strBytes = new Uint8Array("Fix roof");
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
     // Vote on Issue nr 0
     var issueId = 0;
@@ -82,9 +89,26 @@ describe("EncodeDAOCore", function () {
 
   })
 
+  it("should mint apartment on admin call", async function () {
+    await expect(encodeDAOCore.connect(owner)
+      .mintApartment(addr1.address, 1, 1, true, ""))
+      .to.emit(encodeDAOCore, 'MintApartment')
+      .withArgs(owner.address, addr1.address, 1, 1, 1, true);
+
+    expect(await encodeDAOCore.balanceOf(addr1.address)).to.equal(1);
+  });
+
+  it("should revert mint apartment on non-admin call", async function () {
+    await expect(encodeDAOCore.connect(addr1)
+      .mintApartment(addr2.address, 1, 20, true, "testURI"))
+      .to.be.revertedWith('Caller is not admin');
+
+    expect(await encodeDAOCore.balanceOf(addr2.address)).to.equal(0);
+  });
 });
 
 // Short method to simplify keccak256 hashing
 function keccak256(strToHash) {
   return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(strToHash));
 }
+
