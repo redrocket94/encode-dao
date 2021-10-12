@@ -129,6 +129,7 @@ describe("EncodeDAOCore", function () {
 
     await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "")
 
+  it("Should complete accepted Issue", async function () {
     var strBytes = new Uint8Array("fix roof");
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
     var issueId = 0;
@@ -138,7 +139,7 @@ describe("EncodeDAOCore", function () {
       .completeIssue(issueId))
       .to.emit(encodeDAOCore, "CompleteIssue")
       .withArgs(issueId, true);
-    })
+  })
 
     it("Should complete rejected Issue", async function () {
     await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "")
@@ -150,10 +151,19 @@ describe("EncodeDAOCore", function () {
     await expect(encodeDAOCore.connect(addr1)
       .completeIssue(issueId))
       .to.emit(encodeDAOCore, "CompleteIssue")
-      .withArgs(issueId, false);
+      .withArgs(issueId, false)
     })
-});
 
+    it("Should accept votes from different addresses", async function() {
+    var strBytes = new Uint8Array("fix roof")
+    await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
+    var issueId = 0
+    await encodeDAOCore.connect(addr1)
+      .voteIssue(issueId, false)
+    await encodeDAOCore.connect(addr2)
+      .voteIssue(issueId, false)
+    });
+});
 // Short method to simplify keccak256 hashing
 function keccak256(strToHash) {
   return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(strToHash));
