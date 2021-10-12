@@ -1,14 +1,12 @@
-import { useState } from "react";
-import { useContractMethod } from "../hooks";
-import { ethers } from "ethers";
+import { useCompleteIssue } from "../hooks";
 
-export default function CompleteIssue(issueId) {
-    const { state: completeState, send: sendCompleteIssue } =
-        useContractMethod("completeIssue");
+export default function CompleteIssue(props) {
+    const { state: completeState, send: sendCompleteIssue } = useCompleteIssue();
+
 
     function handleClick() {
             sendCompleteIssue(
-                issueId
+               props.issueId
             );
     }
 

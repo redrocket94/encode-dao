@@ -29,8 +29,12 @@ export function useGetIssues() {
 }
 
 export function useContractMethod(methodName) {
-    console.log("Use method")
     const { state, send } = useContractFunction(contract, methodName, {});
+    return { state, send };
+}
+
+export function useCompleteIssue() {
+    const { state, send } = useContractFunction(contract, "completeIssue", {});
     return { state, send };
 }
 

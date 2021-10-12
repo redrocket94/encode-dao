@@ -12,7 +12,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     event ProposeIssue(
         uint256 id,
         address indexed _from,
-        bytes32 name,
+        bytes name,
         uint16 fundingMinimum,
         string description,
         IssueStatus status
@@ -68,7 +68,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     struct Issue {
         uint256 id;
-        bytes32 name;
+        bytes name;
         address proposer;
         uint16 fundingMinimum;
         string description;
@@ -119,7 +119,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     /// Propose issue by name and minimum funding required
     function proposeIssue(
-        bytes32 memory name,
+        bytes memory name,
         uint16 fundingMinimum,
         string memory description
     ) public {
@@ -175,7 +175,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// @notice Vote on issue with issue id: `issueId` and bool `decision`
     function voteIssue(uint256 issueId, bool decision)
         public
-        ApartmentOwnerOnly
+       //  ApartmentOwnerOnly
     {
         require(issueId <= _issueIds.current(), "IssueID is not valid");
         require(
