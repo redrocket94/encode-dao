@@ -72,6 +72,9 @@ describe("EncodeDAOCore", function () {
   })
 
   it("should not vote twice on the same issue", async function () {
+    // Mint dummy apartment as only NFT holders can vote
+    await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "");
+
     var strBytes = new Uint8Array("fix roof");
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
     // Vote on Issue nr 0
