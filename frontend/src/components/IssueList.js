@@ -1,8 +1,8 @@
 import IssueItem from "./IssueItem";
-import { usePendingIssues } from "../hooks";
+import { useGetIssues } from "../hooks";
 
 export default function IssueList(props) {
-    const [issues] = usePendingIssues();
+    const [issues] = useGetIssues();
 
     return (
         <ul id="issue-list" className="item-list">

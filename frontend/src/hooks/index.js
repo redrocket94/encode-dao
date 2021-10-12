@@ -22,6 +22,12 @@ export function usePendingIssues() {
     return pendingIssues;
 }
 
+export function useGetIssues() {
+    const issues =
+        useContractCall({ ...callConfigs, method: "getIssues" }) ?? [];
+    return issues;
+}
+
 export function useContractMethod(methodName) {
     const { state, send } = useContractFunction(contract, methodName, {});
     return { state, send };

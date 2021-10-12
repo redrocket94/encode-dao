@@ -17,12 +17,7 @@ export default function IssueItem(props) {
             <span className="list-element-title">
                 {ethers.utils.parseBytes32String(props.name)}
             </span>
-            <span>
-                {parseFloat(
-                    ethers.utils.formatEther(props.fundingMinimum)
-                ).toFixed(3)}{" "}
-                ETH
-            </span>
+            <span>{props.fundingMinimum} ETH</span>
             {props.status === 0 && (
                 <div className="voting-buttons">
                     <button onClick={() => onVote(true)}>Yes</button>

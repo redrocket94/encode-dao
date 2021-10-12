@@ -14,7 +14,7 @@ export default function ProposeIssue({ close }) {
         if (name) {
             sendProposeIssue(
                 ethers.utils.formatBytes32String(name),
-                ethers.utils.parseEther(funding),
+                parseInt(funding),
                 description
             );
         }
@@ -44,14 +44,6 @@ export default function ProposeIssue({ close }) {
                                 step="any"
                                 onChange={(e) => setFunding(e.target.value)}
                             ></input>
-                            <span
-                                style={{
-                                    textAlign: "left",
-                                    marginLeft: "1rem",
-                                }}
-                            >
-                                ETH
-                            </span>
                             <label htmlFor="issue-description">
                                 Description:{" "}
                             </label>
