@@ -161,12 +161,10 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
             msg.sender == _issues[issueId].proposer,
             "Sender is not proposer"
         );
-        bool accepted;
-        if(_issues[issueId].decisionAggregate > 0) {
-            accepted = true;
+        bool accepted = (_issues[issueId].decisionAggregate > 0);
+        if (accepted) {
             _issues[issueId].status = IssueStatus.ACCEPTED; 
         } else {
-            accepted = false;
             _issues[issueId].status = IssueStatus.REJECTED;
         }
         
