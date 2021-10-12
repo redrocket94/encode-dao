@@ -13,13 +13,13 @@ const callConfigs = {
 
 const contract = new Contract(encodeDaoCoreAddress, contractInterface);
 
-export function usePendingIssues() {
-    const pendingIssues =
+export function useIssues() {
+    const Issues =
         useContractCall({
             ...callConfigs,
-            method: "getPendingIssues",
+            method: "getIssues",
         }) ?? [];
-    return pendingIssues;
+    return Issues;
 }
 
 export function useGetIssues() {
@@ -29,6 +29,7 @@ export function useGetIssues() {
 }
 
 export function useContractMethod(methodName) {
+    console.log("Use method")
     const { state, send } = useContractFunction(contract, methodName, {});
     return { state, send };
 }
