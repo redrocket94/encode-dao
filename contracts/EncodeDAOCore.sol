@@ -20,6 +20,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     event MintApartment(
         address minter,
+        address receiver,
         uint256 id,
         uint256 floor,
         uint256 squareMeters,
@@ -77,6 +78,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     }
 
     function mintApartment(
+        address receiver,
         uint256 floor,
         uint256 squareMeters,
         bool heating,
@@ -93,10 +95,17 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
             heating: heating
         });
 
-        _mint(msg.sender, currentId);
+        _mint(receiver, currentId);
         _setTokenURI(currentId, uri);
 
-        emit MintApartment(msg.sender, currentId, floor, squareMeters, heating);
+        emit MintApartment(
+            msg.sender,
+            receiver,
+            currentId,
+            floor,
+            squareMeters,
+            heating
+        );
     }
 
     /// Propose issue by name and minimum funding required
