@@ -56,9 +56,13 @@ describe("EncodeDAOCore", function () {
   });
 
   it("should vote on an issue", async function () {
+    // Mint dummy apartment as only NFT holders can vote
+    await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "");
+
     // Add Issue
     var strBytes = new Uint8Array("Fix roof");
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
+
     // Vote on Issue nr 0. Should change to read issueId from event
     var issueId = 0;
     await expect(encodeDAOCore.connect(addr1)
