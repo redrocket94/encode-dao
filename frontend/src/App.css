@@ -16,7 +16,7 @@ nav {
 
 a {
     text-decoration: none;
-    color: indigo;
+    color: darkred;
     font-size: 1.2rem;
 }
 
@@ -116,7 +116,7 @@ ul {
     align-items: center;
 }
 
-#propose-issue-window {
+.modal div {
     background-color: white;
     min-width: 600px;
     padding: 1.6rem 2rem;
@@ -129,7 +129,7 @@ ul {
 
 #propose-issue-window form {
     display: grid;
-    grid-template-columns: 40% 30% 30%;
+    grid-template-columns: 40% 60%;
     align-items: center;
     gap: 1rem 0px;
     padding: 0.5rem 0;
@@ -138,4 +138,11 @@ ul {
 
 #propose-issue-button {
     margin-top: 2rem;
+}
+
+button {
+    background-color: darkslategrey;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    font-size: 1rem;
 }

@@ -32,7 +32,6 @@ export default function ProposeIssue({ close }) {
                                 id="issue-name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                style={{ gridColumn: "2 / 4" }}
                             ></input>
                             <label htmlFor="issue-funding">
                                 Funding minimum:{" "}
@@ -52,7 +51,6 @@ export default function ProposeIssue({ close }) {
                                 id="issue-description"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                style={{ gridColumn: "2 / 4" }}
                             ></input>
                         </form>
                         <button id="propose-issue-button" onClick={handleClick}>
