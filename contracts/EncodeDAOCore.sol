@@ -175,7 +175,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     /// @notice Vote on issue with issue id: `issueId` and bool `decision`
     function voteIssue(uint256 issueId, bool decision)
         public
-       //  ApartmentOwnerOnly
+        ApartmentOwnerOnly
     {
         require(issueId <= _issueIds.current(), "IssueID is not valid");
         require(

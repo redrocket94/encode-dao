@@ -5,3 +5,8 @@
 5. copy-paste deployed contract address into `frontend/src/config.json`
 6. `cd frontend`
 7. `yarn start`
+
+
+
+#### Testing voting
+To test voting you have to comment out the onlyApartmentOwner modifier
