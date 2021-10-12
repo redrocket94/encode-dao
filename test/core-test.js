@@ -91,9 +91,9 @@ describe("EncodeDAOCore", function () {
 
   it("should mint apartment on admin call", async function () {
     await expect(encodeDAOCore.connect(owner)
-      .mintApartment(addr1.address, 1, 20, true, "testURI"))
-      .to.emit(encodeDAOCore, "MintApartment")
-      .withArgs(owner.addresss, addr1.address, 1, 1, 20, true);
+      .mintApartment(addr1.address, 1, 1, true, ""))
+      .to.emit(encodeDAOCore, 'MintApartment')
+      .withArgs(owner.address, addr1.address, 1, 1, 1, true);
 
     expect(await encodeDAOCore.balanceOf(addr1.address)).to.equal(1);
   });
