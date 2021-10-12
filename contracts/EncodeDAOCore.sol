@@ -93,8 +93,8 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
             heating: heating
         });
 
-        _setTokenURI(currentId, uri);
         _mint(msg.sender, currentId);
+        _setTokenURI(currentId, uri);
 
         emit MintApartment(msg.sender, currentId, floor, squareMeters, heating);
     }
