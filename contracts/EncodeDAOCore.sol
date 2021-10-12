@@ -18,31 +18,52 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         IssueStatus status
     );
 
-    event IssueVotedOn(address voter, uint256 issueId, bool decision);
+    event MintApartment(
+        address minter,
+        address receiver,
+        uint256 id,
+        uint256 floor,
+        uint256 squareMeters,
+        bool heating
+    );
+
+    event VoteIssue(
+        address voter, 
+        uint256 issueId,
+        bool decision
+    );
+    
+    event CompleteIssue(
+        uint256 id,
+        bool decision
+    );
 
     /// Constants
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
 
     /// State vars
-    Issue[] private pendingIssues;
-    Issue[] private acceptedIssues;
-    Issue[] private rejectedIssues;
+    Issue[] private _issues;
     Counters.Counter private _issueIds;
+    Counters.Counter private _apartmentIds;
 
-    mapping(uint256 => mapping(address => Vote)) private votesOnIssues;
-    mapping(uint256 => Apartment) private apartments;
+    mapping(uint256 => mapping(address => VoteStatus)) private _votesOnIssues;
+    mapping(uint256 => Apartment) private _apartmentIdToApartment;
 
     /// Modifiers
     modifier ApartmentOwnerOnly() {
-        /// TODO: Add Apartment owner check
-        require(true, "Not a current apartment owner");
+        require(balanceOf(msg.sender) > 0, "Not a current apartment owner");
         _;
     }
 
     enum IssueStatus {
-        Pending,
-        Rejected,
-        Accepted
+        PENDING,
+        REJECTED,
+        ACCEPTED
+    }
+    enum VoteStatus {
+        NO_VOTE,
+        ACCEPT,
+        REJECT
     }
 
     struct Issue {
@@ -55,13 +76,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         int32 decisionAggregate; // starts at 0, can be negative
     }
 
-    struct Vote {
-        bool decision;
-        bool voted; // User has voted
-    }
-
     struct Apartment {
-        uint256 id;
         uint256 floor;
         uint256 squareMeters;
         bool heating;
@@ -69,6 +84,37 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
 
     constructor() ERC721("ApartmentNFT", "ANFT") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function mintApartment(
+        address receiver,
+        uint256 floor,
+        uint256 squareMeters,
+        bool heating,
+        string memory uri
+    ) external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not admin");
+
+        _apartmentIds.increment();
+        uint256 currentId = _apartmentIds.current();
+
+        _apartmentIdToApartment[currentId] = Apartment({
+            floor: floor,
+            squareMeters: squareMeters,
+            heating: heating
+        });
+
+        _mint(receiver, currentId);
+        _setTokenURI(currentId, uri);
+
+        emit MintApartment(
+            msg.sender,
+            receiver,
+            currentId,
+            floor,
+            squareMeters,
+            heating
+        );
     }
 
     /// Propose issue by name and minimum funding required
@@ -79,8 +125,8 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     ) public {
         uint256 currentId = _issueIds.current();
         _issueIds.increment();
-        IssueStatus status = IssueStatus.Pending;
-        pendingIssues.push(
+        IssueStatus status = IssueStatus.PENDING;
+        _issues.push(
             Issue({
                 id: currentId,
                 name: name,
@@ -102,6 +148,29 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         );
     }
 
+    function completeIssue(uint256 issueId) public {
+        require(
+            issueId <= _issueIds.current(),
+            "IssueID is not valid"
+        );
+        require(
+            _issues[issueId].status == IssueStatus.PENDING,
+            "Issue is not pending"
+        );
+        require(
+            msg.sender == _issues[issueId].proposer,
+            "Sender is not proposer"
+        );
+        bool accepted = (_issues[issueId].decisionAggregate > 0);
+        if (accepted) {
+            _issues[issueId].status = IssueStatus.ACCEPTED; 
+        } else {
+            _issues[issueId].status = IssueStatus.REJECTED;
+        }
+        
+        emit CompleteIssue(issueId, accepted);
+    }
+
     /// Vote on issue by passing issueId
     /// @notice Vote on issue with issue id: `issueId` and bool `decision`
     function voteIssue(uint256 issueId, bool decision)
@@ -110,25 +179,28 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
     {
         require(issueId <= _issueIds.current(), "IssueID is not valid");
         require(
-            pendingIssues[issueId].status == IssueStatus.Pending,
+            _issues[issueId].status == IssueStatus.PENDING,
             "Issue is not pending"
         );
         require(
-            !votesOnIssues[issueId][msg.sender].voted,
+            _votesOnIssues[issueId][msg.sender] == VoteStatus.NO_VOTE,
             "User has already voted"
         );
 
-        Vote memory vote = Vote({decision: decision, voted: true});
-        votesOnIssues[issueId][msg.sender] = vote;
+        if (decision) {
+            _votesOnIssues[issueId][msg.sender] = VoteStatus.ACCEPT;
+        } else {
+            _votesOnIssues[issueId][msg.sender] = VoteStatus.REJECT;
+        }
 
         // Change decision aggregate on issue, increment if true or deduct if false.
         if (decision) {
-            pendingIssues[issueId].decisionAggregate++;
+            _issues[issueId].decisionAggregate++;
         } else {
-            pendingIssues[issueId].decisionAggregate--;
+            _issues[issueId].decisionAggregate--;
         }
 
-        emit IssueVotedOn(msg.sender, issueId, decision);
+        emit VoteIssue(msg.sender, issueId, decision);
     }
 
     /// Withdraw (everything) from failed issue
@@ -148,37 +220,17 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         view
         returns (Apartment memory apartment)
     {
-        return (apartments[apartmentId]);
+        return _apartmentIdToApartment[apartmentId];
     }
 
-    /// Get a list of accepted issues
-    function getAcceptedIssues() public view returns (Issue[] memory) {
-        return acceptedIssues;
+    /// Get a list of _issues
+    function getIssues() public view returns (Issue[] memory) {
+        return _issues;
     }
 
-    /// Get the length of accepted issues
-    function getAcceptedIssuesLength() public view returns (uint256) {
-        return acceptedIssues.length;
-    }
-
-    /// Get a list of rejected issues
-    function getRejectedIssues() public view returns (Issue[] memory) {
-        return rejectedIssues;
-    }
-
-    /// Get the length of rejected issues
-    function getRejectedIssuesLength() public view returns (uint256) {
-        return rejectedIssues.length;
-    }
-
-    /// Get a list of pending issues
-    function getPendingIssues() public view returns (Issue[] memory) {
-        return pendingIssues;
-    }
-
-    /// Get the length of the pendingIssues list
-    function getPendingIssuesLength() public view returns (uint256) {
-        return pendingIssues.length;
+    /// Get the length of _issues
+    function getIssuesLength() public view returns (uint256) {
+        return _issues.length;
     }
 
     /// @dev IGNORE - Required to override in impl as both ERC721 and AccessControl define this
