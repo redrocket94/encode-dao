@@ -67,7 +67,7 @@ describe("EncodeDAOCore", function () {
       .withArgs(addr1.address, issueId, true);
   })
 
-  it("Should not vote twice on the same issue", async function () {
+  it("should not vote twice on the same issue", async function () {
     var strBytes = new Uint8Array("fix roof");
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
     // Vote on Issue nr 0
@@ -82,6 +82,12 @@ describe("EncodeDAOCore", function () {
 
   })
 
+  it("should mint apartment on admin call", async function () {
+    await expect(encodeDAOCore.connect(owner)
+      .mintApartment(1, 20, true, "testURI"))
+      .to.emit(encodeDAOCore, "MintApartment")
+      .withArgs(owner.addresss, 1, 1, 20, true);
+  });
 });
 
 // Short method to simplify keccak256 hashing
