@@ -27,7 +27,16 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         bool heating
     );
 
-    event IssueVotedOn(address voter, uint256 issueId, bool decision);
+    event VoteIssue(
+        address voter, 
+        uint256 issueId,
+        bool decision
+    );
+    
+    event CompleteIssue(
+        uint256 id,
+        bool decision
+    );
 
     /// Constants
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
@@ -139,6 +148,29 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
         );
     }
 
+    function completeIssue(uint256 issueId) public {
+        require(
+            issueId <= _issueIds.current(),
+            "IssueID is not valid"
+        );
+        require(
+            _issues[issueId].status == IssueStatus.PENDING,
+            "Issue is not pending"
+        );
+        require(
+            msg.sender == _issues[issueId].proposer,
+            "Sender is not proposer"
+        );
+        bool accepted = (_issues[issueId].decisionAggregate > 0);
+        if (accepted) {
+            _issues[issueId].status = IssueStatus.ACCEPTED; 
+        } else {
+            _issues[issueId].status = IssueStatus.REJECTED;
+        }
+        
+        emit CompleteIssue(issueId, accepted);
+    }
+
     /// Vote on issue by passing issueId
     /// @notice Vote on issue with issue id: `issueId` and bool `decision`
     function voteIssue(uint256 issueId, bool decision)
@@ -168,7 +200,7 @@ contract EncodeDAOCore is ERC721URIStorage, AccessControl {
             _issues[issueId].decisionAggregate--;
         }
 
-        emit IssueVotedOn(msg.sender, issueId, decision);
+        emit VoteIssue(msg.sender, issueId, decision);
     }
 
     /// Withdraw (everything) from failed issue
