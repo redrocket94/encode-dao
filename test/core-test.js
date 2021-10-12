@@ -125,11 +125,8 @@ describe("EncodeDAOCore", function () {
     expect(await encodeDAOCore.balanceOf(addr2.address)).to.equal(0);
   });
 
-    it("Should complete accepted Issue", async function () {
-
-    await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "")
-
   it("Should complete accepted Issue", async function () {
+    await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "")
     var strBytes = new Uint8Array("fix roof");
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
     var issueId = 0;
@@ -141,7 +138,7 @@ describe("EncodeDAOCore", function () {
       .withArgs(issueId, true);
   })
 
-    it("Should complete rejected Issue", async function () {
+  it("Should complete rejected Issue", async function () {
     await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "")
     var strBytes = new Uint8Array("fix roof");
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
@@ -152,16 +149,22 @@ describe("EncodeDAOCore", function () {
       .completeIssue(issueId))
       .to.emit(encodeDAOCore, "CompleteIssue")
       .withArgs(issueId, false)
-    })
+  })
 
-    it("Should accept votes from different addresses", async function() {
+  it("Should accept votes from different addresses", async function() {
+    await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "")
+    await encodeDAOCore.connect(owner).mintApartment(addr2.address, 1, 1, true, "")
     var strBytes = new Uint8Array("fix roof")
     await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
     var issueId = 0
-    await encodeDAOCore.connect(addr1)
-      .voteIssue(issueId, false)
-    await encodeDAOCore.connect(addr2)
-      .voteIssue(issueId, false)
+    await expect(encodeDAOCore.connect(addr1)
+      .voteIssue(issueId, true))
+      .to.emit(encodeDAOCore, "VoteIssue")
+      .withArgs(addr1.address, issueId, true)
+    await expect(encodeDAOCore.connect(addr2)
+      .voteIssue(issueId, false))
+      .to.emit(encodeDAOCore, "VoteIssue")
+      .withArgs(addr2.address, issueId, false)
     });
 });
 // Short method to simplify keccak256 hashing
