@@ -69,26 +69,6 @@ describe("EncodeDAOCore", function () {
       .to.emit(encodeDAOCore, "VoteIssue")
       .withArgs(addr1.address, issueId, true);
   })
-  it("should accept several votes on an issue", async function () {
-    // Mint dummy apartment as only NFT holders can vote
-    await encodeDAOCore.connect(owner).mintApartment(addr1.address, 1, 1, true, "");
-    await encodeDAOCore.connect(owner).mintApartment(addr2.address, 1, 1, true, "");
-
-    // Add Issue
-    var strBytes = new Uint8Array("Fix roof");
-    await encodeDAOCore.connect(addr1).proposeIssue(strBytes, 50, "We need to fix the roof - it's raining on my head!")
-
-    // Vote on Issue nr 0. Should change to read issueId from event
-    var issueId = 0;
-    await expect(encodeDAOCore.connect(addr1)
-      .voteIssue(issueId, true))
-      .to.emit(encodeDAOCore, "VoteIssue")
-      .withArgs(addr1.address, issueId, true);
-    await expect(encodeDAOCore.connect(addr2)
-      .voteIssue(issueId, true))
-      .to.emit(encodeDAOCore, "VoteIssue")
-      .withArgs(addr2.address, issueId, true);
-  })
 
   it("should not vote twice on the same issue", async function () {
     // Mint dummy apartment as only NFT holders can vote
