@@ -16,7 +16,7 @@ nav {
 
 a {
     text-decoration: none;
-    color: indigo;
+    color: darkred;
     font-size: 1.2rem;
 }
 
@@ -89,4 +89,60 @@ ul {
     display: block;
     font-size: 1.2rem;
     margin: 1rem 0 0 0;
+}
+
+#connect-wallet {
+    position: fixed;
+    right: 0;
+    top: 0.2rem;
+}
+
+.wallet-element {
+    padding: 0.5rem;
+    background-color: darkslategrey;
+    color: white;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    background-color: #33333399;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal div {
+    background-color: white;
+    min-width: 600px;
+    padding: 1.6rem 2rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#propose-issue-window form {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    align-items: center;
+    gap: 1rem 0px;
+    padding: 0.5rem 0;
+    width: 100%;
+}
+
+#propose-issue-button {
+    margin-top: 2rem;
+}
+
+button {
+    background-color: darkslategrey;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    font-size: 1rem;
 }
