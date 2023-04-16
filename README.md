@@ -6,9 +6,7 @@
 
 This is the culmination of [Encode Academy](https://www.encode.club/encode-academy), the 8-week long Solidity course by Encode Club in collaboration with Extropy, we worked together in a group of 5:
 
-- Oliver Hegelund Duedam
-  - [LinkedIn](https://www.linkedin.com/in/oliver-h-duedam/)
-  - [Twitter](https://twitter.com/oliverhduedam)
+- Oliver H. D.
 - Leo Bonato
 - Vasileios Politeiadis
 - Håkon Strøm Lie
